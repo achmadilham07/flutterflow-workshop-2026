@@ -1,0 +1,21 @@
+{
+  "contextVersion": 3,
+  "contextFormat": "split",
+  "generatedAt": "2026-07-24T22:15:44.613113Z",
+  "projectId": "TM44WPUaNGKK7H39PYsi",
+  "structureHash": 1012045707,
+  "detailFiles": [
+    "context/api_calls.md",
+    "context/app_constants.md",
+    "context/app_events.md",
+    "context/app_state.md",
+    "context/components.md",
+    "context/custom_code.md",
+    "context/data_model.md",
+    "context/dependencies.md",
+    "context/navigation.md",
+    "context/pages.md",
+    "context/tests.md",
+    "context/theme.md"
+  ]
+}

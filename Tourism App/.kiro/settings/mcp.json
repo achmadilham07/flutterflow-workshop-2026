@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "flutterflow_ai": {
+      "command": "dart",
+      "args": [
+        "run",
+        "/Users/achmadilham/AndroidStudioProjects/flutterflow-exploration/Tourism App/.flutterflow/sdk/flutterflow_ai/mcp/server.dart",
+        "--dir",
+        "/Users/achmadilham/AndroidStudioProjects/flutterflow-exploration/Tourism App"
+      ],
+      "env": {}
+    }
+  }
+}
