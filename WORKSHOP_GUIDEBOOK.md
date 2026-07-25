@@ -8,15 +8,15 @@
 
 ## Deskripsi
 
-Workshop ini adalah sesi 80 menit (slide presentasi + live demo digabung) yang menunjukkan sisi *developer* dari FlutterFlow — bukan generate app baru pakai AI, tapi bagaimana kontrol penuh atas debugging, custom code Dart, dan integrasi Firebase bisa dilakukan **manual di dalam UI editor FlutterFlow**. Segmen live demo (debugging, custom function, Firestore rules) sepenuhnya manual — tanpa AI assistant maupun CLI aktif mengontrol editor di panggung.
+Workshop ini adalah sesi 80 menit (slide presentasi + live demo digabung) yang menunjukkan sisi *developer* dari FlutterFlow — bukan generate app baru pakai AI, tapi bagaimana kontrol penuh atas debugging, custom code Dart, dan integrasi Firebase bisa dilakukan **manual di dalam UI editor FlutterFlow**. Segmen live demo (debugging, custom function, Firestore rules) sepenuhnya manual — tanpa AI assistant maupun CLI aktif mengontrol editor selama sesi.
 
-Project yang dipakai: **Tourism App**, aplikasi wisata yang mengonsumsi Tourism API publik (`tourism-api.dicoding.dev`, read-only, tanpa autentikasi). Sebelum sesi, project ini sudah disiapkan sebagai kerangka placeholder (4 halaman + API call terdaftar) lewat FlutterFlow CLI dan AI assistant lokal (Claude + FlutterFlow MCP). Berbeda dari draft awal, proses persiapan ini **tidak disembunyikan** — justru dijelaskan terbuka ke audiens di Segmen 4 (setelah Firestore, sebelum penutup), sebagai bentuk transparansi: seluruh project ini dibantu Claude + FlutterFlow MCP, dan sesi ini menunjukkan dengan jelas batas antara "yang dibantu AI di belakang layar" dan "yang dikerjakan manual di panggung."
+Project yang dipakai: **Tourism App**, aplikasi wisata yang mengonsumsi Tourism API publik (`tourism-api.dicoding.dev`, read-only, tanpa autentikasi). Sebelum sesi, project ini sudah disiapkan sebagai kerangka placeholder (4 halaman + API call terdaftar) lewat FlutterFlow CLI dan AI assistant lokal (Claude + FlutterFlow MCP). Berbeda dari draft awal, proses persiapan ini **tidak disembunyikan** — justru dijelaskan terbuka ke kamu di Segmen 4 (setelah Firestore, sebelum penutup), sebagai bentuk transparansi: seluruh project ini dibantu Claude + FlutterFlow MCP, dan sesi ini menunjukkan dengan jelas batas antara "yang dibantu AI di belakang layar" dan "yang dikerjakan manual selama sesi."
 
-**Catatan penting untuk presenter:** dua pembicara lain di acara yang sama fokus pada AI-generated app dari nol. Sesi ini sengaja tidak bersaing di sana — framing ke audiens selalu "ini bagian development inti yang tetap butuh keahlian manual, dengan atau tanpa AI."
+**Catatan penting:** dua sesi lain di acara yang sama fokus pada AI-generated app dari nol. Sesi ini sengaja tidak bersaing di sana — framingnya selalu "ini bagian development inti yang tetap butuh keahlian manual, dengan atau tanpa AI."
 
 ## Tujuan Workshop
 
-Setelah sesi ini, audiens diharapkan memahami:
+Setelah sesi ini, kamu diharapkan memahami:
 
 1. Cara mendiagnosis dan memperbaiki bug parsing API secara manual di FlutterFlow (key mismatch `place` vs `places`).
 2. Cara menulis Custom Function Dart murni (tanpa package pihak ketiga) untuk kebutuhan formatting data — truncate teks, format angka, hitung jarak geospasial.
@@ -53,9 +53,9 @@ Struktur project FlutterFlow yang relevan (semua sudah dibuat sebagai kerangka s
 
 **Langkah 0 — Sambungkan dulu navigasi Home → Detail (prasyarat, wajib sebelum lanjut ke debugging):**
 
-Kerangka placeholder saat ini punya satu gap: tap di kartu `PlaceCard` pada `HomePage` belum diarahkan ke `DetailPage` — action-nya masih kosong. Tanpa ini, Detail Page tidak bisa diakses sama sekali dari Home, jadi harus disambungkan dulu sebelum audiens bisa melihat bug-nya.
+Kerangka placeholder saat ini punya satu gap: tap di kartu `PlaceCard` pada `HomePage` belum diarahkan ke `DetailPage` — action-nya masih kosong. Tanpa ini, Detail Page tidak bisa diakses sama sekali dari Home, jadi harus disambungkan dulu sebelum kamu bisa melihat bug-nya.
 
-1. Buka `HomePage` di FlutterFlow editor, masuk ke Test Mode dulu sekali untuk konfirmasi: tap salah satu kartu tempat wisata — pastikan memang tidak terjadi apa-apa (tidak berpindah halaman). Ini jadi bukti awal ke audiens bahwa ada yang perlu disambungkan manual.
+1. Buka `HomePage` di FlutterFlow editor, masuk ke Test Mode dulu sekali untuk konfirmasi: tap salah satu kartu tempat wisata — pastikan memang tidak terjadi apa-apa (tidak berpindah halaman). Ini jadi bukti awal buat kamu bahwa ada yang perlu disambungkan manual.
 
    ![Tap kartu Bunaken di Home — tidak terjadi apa-apa, belum berpindah ke Detail Page](images/tourism-app-navigation-error.gif)
 2. Kembali ke Builder, pilih widget kartu `PlaceCard` di dalam `ListView` pada `HomePage`.
@@ -73,10 +73,10 @@ Setelah navigasi ini tersambung, baru lanjut ke debugging key-mismatch di bawah 
    - `/list` → key jamak `places` (array)
    - `/detail/{id}` → key tunggal `place` (object)
 2. Buka Custom Action / parsing logic di `DetailPage` yang **salah** mengasumsikan `/detail/{id}` juga mengembalikan `places` (array), padahal seharusnya `place` (object tunggal).
-3. Jalankan **Test Mode**, buka Detail Page dari salah satu kartu di Home — tunjukkan ke audiens: data kosong / null / crash (gambar tempat wisata gagal tampil, muncul `EncodingError: The source image cannot be decoded` — akibat parsing salah field, bukan URL gambar asli yang kebaca).
+3. Jalankan **Test Mode**, buka Detail Page dari salah satu kartu di Home — kamu akan lihat: data kosong / null / crash (gambar tempat wisata gagal tampil, muncul `EncodingError: The source image cannot be decoded` — akibat parsing salah field, bukan URL gambar asli yang kebaca).
 
    ![Detail Page error — EncodingError karena parsing key salah](images/tourism-app-detailpage-error.gif)
-4. Jelaskan verbal ke audiens: *"`/detail/{id}` mengembalikan objek tunggal, bukan array — makanya asumsi kode tadi salah."*
+4. Intinya: *"`/detail/{id}` mengembalikan objek tunggal, bukan array — makanya asumsi kode tadi salah."*
 5. Edit langsung di panel FlutterFlow: ubah referensi parsing dari `response['places']` menjadi `response['place']`.
 6. Compile ulang, jalankan Test Mode lagi — Detail Page sekarang tampil benar (nama, deskripsi, alamat, gambar).
 
@@ -143,7 +143,7 @@ Semua kode di bawah **pure Dart, tanpa package pihak ketiga** — supaya tetap k
       - `likeCount` → set-value, arahkan ke parameter component `placeLike`.
    5. Confirm/simpan binding-nya.
 6. Jalankan Test Mode — tunjukkan angka besar (misal 1200) tampil sebagai "1.2K suka".
-7. **Iterasi live (opsional):** ubah kode sedikit di depan audiens (misal ubah threshold atau suffix), klik **Save Function** lagi, untuk menunjukkan proses iterasi manual.
+7. **Iterasi (opsional):** coba ubah kode sedikit sendiri (misal ubah threshold atau suffix), klik **Save Function** lagi, untuk merasakan proses iterasi manual.
 
 **Fungsi 3 (opsional, jika waktu masih ada) — `formatDistance`:**
 
@@ -163,7 +163,7 @@ Semua kode di bawah **pure Dart, tanpa package pihak ketiga** — supaya tetap k
    ```
    Ini formula **Haversine** — cara standar menghitung jarak antara dua titik koordinat (lintang/bujur) di permukaan bola bumi. `p` mengonversi derajat ke radian (dibutuhkan trigonometri Dart), `a` menghitung bagian "setengah chord length" kuadrat, dan `12742` adalah 2× jari-jari bumi dalam km — hasil akhirnya jarak garis lurus antara dua koordinat.
 4. Klik **Save Function** untuk menyimpan.
-5. Jelaskan ke audiens: argumen `lat1/lon1/lat2/lon2` dipetakan langsung dari field `latitude`/`longitude` yang sudah tersedia di response Tourism API — tidak perlu data tambahan.
+5. Argumen `lat1/lon1/lat2/lon2` dipetakan langsung dari field `latitude`/`longitude` yang sudah tersedia di response Tourism API — tidak perlu data tambahan.
 6. Tunjukkan bahwa custom function bisa berisi logika numerik/matematis, bukan cuma formatting string. Fungsi ini sengaja tidak dibind ke widget manapun — app belum punya sumber koordinat user (belum minta izin lokasi), jadi cukup ditunjukkan lewat Action Chain/Preview dengan dua koordinat contoh untuk membuktikan logikanya jalan.
 
 **Setelah semua fungsi selesai (wajib sebelum lanjut ke Segmen 3):**
@@ -173,7 +173,7 @@ Semua kode di bawah **pure Dart, tanpa package pihak ketiga** — supaya tetap k
 
 ### 3. Segmen 3 — Firestore Schema & Security Rules Secara Manual (8-10 menit)
 
-**Framing ke audiens:** *"Tourism API ini publik dan read-only — tidak ada cara menyimpan siapa yang favorite suatu tempat. Makanya kita butuh Firestore sendiri."*
+**Konteks:** *"Tourism API ini publik dan read-only — tidak ada cara menyimpan siapa yang favorite suatu tempat. Makanya kita butuh Firestore sendiri."*
 
 1. Jelaskan verbal struktur data yang akan dibuat:
    - Koleksi `favorites` — `userId`, `placeId`, `createdAt`
@@ -186,7 +186,7 @@ Semua kode di bawah **pure Dart, tanpa package pihak ketiga** — supaya tetap k
    ```javascript
    allow read, write: if true;
    ```
-4. Tanyakan ke audiens: *"Apa masalah dari rule ini?"* — beri jeda sebentar untuk diskusi.
+4. Coba pikirkan dulu: *"Apa masalah dari rule ini?"*
 5. Tulis contoh Security Rules yang lebih ketat, **untuk dibahas — JANGAN di-deploy**. Biarkan rule `allow read, write: if true;` dari langkah 3 tetap aktif, supaya integrasi Firestore di langkah 7-8 di bawah tetap bisa berjalan (app ini belum punya sistem login, jadi rule yang mensyaratkan `request.auth != null` akan menolak semua read/write kalau benar-benar dipublish sekarang):
    ```javascript
    rules_version = '2';
@@ -204,7 +204,7 @@ Semua kode di bawah **pure Dart, tanpa package pihak ketiga** — supaya tetap k
    - `match /favorites/{document}`: rule berlaku untuk setiap dokumen di koleksi ini.
    - Empat verb dipisah eksplisit — `read` (baca), `create` (bikin dokumen baru, dipakai saat user tap Favorite), `write` (ubah dokumen), `delete` (hapus dokumen, dipakai saat user tap Unfavorite) — semuanya mensyaratkan user sedang login (`request.auth != null`). Siapapun yang belum login langsung ditolak di semua operasi.
    - **Momen "aha":** rule awal `allow read, write: if true;` mengizinkan SIAPA SAJA baca/tulis/hapus SEMUA dokumen, tanpa perlu login sama sekali. Rule di atas menutup celah paling dasar itu — tapi karena app ini belum punya login, rule ini tetap sebatas dibahas, tidak dipublish.
-6. Jelaskan ke audiens secara verbal: rule produksi minimal harus mensyaratkan user login (`request.auth != null`) di keempat operasi — read, create, write, delete — sebelum boleh menyentuh data apapun. Karena app ini belum punya login, rule tetap dibiarkan longgar (`allow read, write: if true;`) demi kelancaran demo integrasi Firestore berikutnya — sampaikan trade-off ini terus terang ke audiens, jangan disembunyikan.
+6. Rule produksi minimal harus mensyaratkan user login (`request.auth != null`) di keempat operasi — read, create, write, delete — sebelum boleh menyentuh data apapun. Karena app ini belum punya login, rule tetap dibiarkan longgar (`allow read, write: if true;`) demi kelancaran demo integrasi Firestore berikutnya — trade-off ini disampaikan terus terang, bukan sesuatu yang disembunyikan.
 
 **Integrasi Firestore — tombol Favorite di `DetailPage` (manual di FlutterFlow editor):**
 
@@ -241,9 +241,9 @@ Karena belum ada auth, `userId` di setiap dokumen di-hardcode jadi string litera
 
 ### 4. Segmen 4 — FlutterFlow MCP: Intro Persiapan Project (6-8 menit, tanpa live demo)
 
-**Framing ke audiens:** *"Semua yang kita bahas sejauh ini — 4 halaman, API call, komponen — sudah ada sejak awal sesi. Sekarang saya jelaskan terus terang bagaimana kerangka ini disiapkan: dibantu Claude (AI assistant) + FlutterFlow MCP, sebelum hari-H."* Segmen ini murni penjelasan lewat slide — tidak ada live demo di FlutterFlow editor.
+**Konteks:** *"Semua yang kita bahas sejauh ini — 4 halaman, API call, komponen — sudah ada sejak awal sesi. Sekarang dijelaskan terus terang bagaimana kerangka ini disiapkan: dibantu Claude (AI assistant) + FlutterFlow MCP, sebelum hari-H."* Segmen ini murni penjelasan — tidak ada langkah praktik langsung di FlutterFlow editor.
 
-1. **Apa itu FlutterFlow MCP dan kenapa dipakai:** MCP (Model Context Protocol) adalah jembatan yang menghubungkan CLI/AI assistant lokal (Claude Code, dsb) ke project FlutterFlow — dipakai untuk export code, inspect struktur project, dan push perubahan terprogram. Tegaskan: ini dipakai presenter **sebelum hari-H**, bukan bagian dari live demo panggung.
+1. **Apa itu FlutterFlow MCP dan kenapa dipakai:** MCP (Model Context Protocol) adalah jembatan yang menghubungkan CLI/AI assistant lokal (Claude Code, dsb) ke project FlutterFlow — dipakai untuk export code, inspect struktur project, dan push perubahan terprogram. Ini dipakai **sebelum hari-H**, bukan bagian dari demo yang dipraktikkan langsung di segmen ini.
 2. Tunjukkan proses flow persiapan yang benar-benar dipakai, sesuai urutan asli:
    - **Mulai trial FlutterFlow Basic Plan** (14 hari gratis) — dibutuhkan untuk fitur Firebase Integration tanpa batasan plan Free selama masa persiapan.
 
@@ -265,8 +265,8 @@ Karena belum ada auth, `userId` di setiap dokumen di-hardcode jadi string litera
    - `flutterflow ai inspect` — verifikasi struktur project (jumlah halaman, komponen, API group) sebelum lanjut ke langkah berikutnya.
    - Hasil akhir proses ini: kerangka 4 halaman (`HomePage`, `DetailPage`, `SearchPage`, `FavoritesPage`) + API call `TourismApi` yang dipakai sepanjang sesi — persis yang ditunjukkan di Pembukaan.
 3. Jelaskan batas tegas antara dua sisi (bukan before/after, tapi pembagian scope):
-   - **MCP + AI (backstage):** scaffolding halaman, export code, inspect struktur. Semua terjadi sebelum hari-H, tidak pernah menyentuh panggung.
-   - **Manual di panggung (live):** semua yang baru saja didemokan — debugging key-mismatch (Segmen 1), custom Dart function (Segmen 2), Firestore security rules + integrasi (Segmen 3). Sepenuhnya manual, tanpa AI/CLI aktif selama demo berlangsung.
+   - **MCP + AI (backstage):** scaffolding halaman, export code, inspect struktur. Semua terjadi sebelum hari-H, tidak pernah jadi bagian sesi langsung.
+   - **Manual di sesi ini (live):** semua yang baru saja didemokan — debugging key-mismatch (Segmen 1), custom Dart function (Segmen 2), Firestore security rules + integrasi (Segmen 3). Sepenuhnya manual, tanpa AI/CLI aktif selama demo berlangsung.
 4. **Pesan kunci:** *"AI siapkan kerangka, developer isi dan kuasai isinya."* AI mempercepat setup awal (halaman kosong, API terdaftar), tapi kemampuan debug, menulis kode manual, dan merancang keamanan data tetap sepenuhnya keahlian developer — dengan atau tanpa AI.
 
 ### 5. Penutup (2-3 menit)
