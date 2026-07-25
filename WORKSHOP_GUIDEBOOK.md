@@ -26,7 +26,7 @@ Setelah sesi ini, audiens diharapkan memahami:
 
 ## Gambaran Output
 
-Kondisi akhir project setelah seluruh sesi (termasuk perbaikan yang dilakukan live):
+Kondisi akhir project setelah seluruh sesi (termasuk perbaikan yang dilakukan live) — rekaman utuh: [tourism-app-final.mp4](images/tourism-app-final.mp4) (±54 detik, Home dengan deskripsi terpotong & like count terformat, lanjut ke Search).
 
 | Halaman | Sebelum sesi (kerangka) | Sesudah sesi (live) |
 |---|---|---|
@@ -56,6 +56,8 @@ Struktur project FlutterFlow yang relevan (semua sudah dibuat sebagai kerangka s
 Kerangka placeholder saat ini punya satu gap: tap di kartu `PlaceCard` pada `HomePage` belum diarahkan ke `DetailPage` — action-nya masih kosong. Tanpa ini, Detail Page tidak bisa diakses sama sekali dari Home, jadi harus disambungkan dulu sebelum audiens bisa melihat bug-nya.
 
 1. Buka `HomePage` di FlutterFlow editor, masuk ke Test Mode dulu sekali untuk konfirmasi: tap salah satu kartu tempat wisata — pastikan memang tidak terjadi apa-apa (tidak berpindah halaman). Ini jadi bukti awal ke audiens bahwa ada yang perlu disambungkan manual.
+
+   ![Tap kartu Bunaken di Home — tidak terjadi apa-apa, belum berpindah ke Detail Page](images/tourism-app-navigation-error.gif)
 2. Kembali ke Builder, pilih widget kartu `PlaceCard` di dalam `ListView` pada `HomePage`.
 3. Di panel properti kartu, cari parameter aksinya (`onTapAction`) — klik untuk membuka Action Editor.
 4. Tambahkan action baru: **Navigate To** → pilih `DetailPage` sebagai tujuan.
@@ -71,7 +73,9 @@ Setelah navigasi ini tersambung, baru lanjut ke debugging key-mismatch di bawah 
    - `/list` → key jamak `places` (array)
    - `/detail/{id}` → key tunggal `place` (object)
 2. Buka Custom Action / parsing logic di `DetailPage` yang **salah** mengasumsikan `/detail/{id}` juga mengembalikan `places` (array), padahal seharusnya `place` (object tunggal).
-3. Jalankan **Test Mode**, buka Detail Page dari salah satu kartu di Home — tunjukkan ke audiens: data kosong / null / crash.
+3. Jalankan **Test Mode**, buka Detail Page dari salah satu kartu di Home — tunjukkan ke audiens: data kosong / null / crash (gambar tempat wisata gagal tampil, muncul `EncodingError: The source image cannot be decoded` — akibat parsing salah field, bukan URL gambar asli yang kebaca).
+
+   ![Detail Page error — EncodingError karena parsing key salah](images/tourism-app-detailpage-error.gif)
 4. Jelaskan verbal ke audiens: *"`/detail/{id}` mengembalikan objek tunggal, bukan array — makanya asumsi kode tadi salah."*
 5. Edit langsung di panel FlutterFlow: ubah referensi parsing dari `response['places']` menjadi `response['place']`.
 6. Compile ulang, jalankan Test Mode lagi — Detail Page sekarang tampil benar (nama, deskripsi, alamat, gambar).
